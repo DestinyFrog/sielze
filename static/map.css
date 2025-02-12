@@ -1,0 +1,8 @@
+
+#map {
+    min-height: 200px;
+    height: calc(100vh - 50px);
+    width: 100%;
+
+    padding: 20px;
+}

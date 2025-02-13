@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
 import os
 
-from services.way import wayService
+from services.wayService import wayService
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ def get_one_by_uid(uid):
     data = wayService.get_one_by_uid(uid)
     return jsonify(data)
 
-@app.route("/cway", methods=["POST"])
+@app.route("/way", methods=["POST"])
 def create_one_way():
     data = wayService.create_one()
     return jsonify(data)

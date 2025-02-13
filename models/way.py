@@ -1,13 +1,12 @@
 import datetime
 from peewee import *
 
-from db.conn import get_connection
+from db.conn import db
 
-class Route(Model):
+class Way(Model):
     id = IntegerField(primary_key=True)
     uid = UUIDField(unique=True)
-
     created_on = DateTimeField(default=datetime.datetime.now)
 
     class Meta:
-        database = get_connection()
+        database = db

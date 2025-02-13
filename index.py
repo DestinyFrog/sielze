@@ -1,8 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
 import os
 
-from services.route import routeService
+from services.way import wayService
 
 load_dotenv()
 
@@ -12,17 +12,32 @@ app = Flask(__name__)
 def hello_world():
     return render_template('map.html')
 
-print(routeService.get_all())
+#! ____ WAY _____
 
-'''
-@app.route("/routes")
+@app.route("/way")
 def get_all():
-    return routeService.get_all()
+    data = wayService.get_all()
+    return jsonify(data)
 
-@app.route("/create-routes", methods=["GET", "POST"])
-def createone_route():
-    return routeService.create_one()
-    '''
+@app.route("/way/<uuid:uid>")
+def get_one_by_uid(uid):
+    data = wayService.get_one_by_uid(uid)
+    return jsonify(data)
+
+@app.route("/cway", methods=["POST"])
+def create_one_way():
+    data = wayService.create_one()
+    return jsonify(data)
+
+@app.route("/way/<uuid:uid>/add_point", methods=["POST"])
+def add_point_by_id(uid):
+    latitude = request.args['latitude']
+    longitude = request.args['longitude']
+    created_on = request.args['created_on']
+    data = wayService.add_point(uid, latitude, longitude, created_on)
+    return jsonify(data)
 
 if __name__ == '__main__':
-    app.run( os.getenv("HOST") or "localhost", os.getenv("PORT") or 5050)
+    HOST = os.getenv("HOST") or "localhost"
+    PORT = os.getenv("PORT") or 5050
+    app.run(HOST, PORT, debug=True)

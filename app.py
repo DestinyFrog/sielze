@@ -8,11 +8,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
-@app.route("/map", methods=["GET"])
+@app.route("/", methods=["GET"])
 def hello_world():
     return render_template('map.html')
-
-#! ____ WAY _____
 
 @app.route("/way")
 def get_all():
@@ -26,18 +24,14 @@ def get_one_by_uid(uid):
 
 @app.route("/way", methods=["POST"])
 def create_one_way():
-    data = wayService.create_one()
-    return jsonify(data)
-
-@app.route("/way/<uuid:uid>/add_point", methods=["POST"])
-def add_point_by_id(uid):
-    latitude = request.args['latitude']
-    longitude = request.args['longitude']
-    created_on = request.args['created_on']
-    data = wayService.add_point(uid, latitude, longitude, created_on)
+    body = request.get_json()
+    points = body['points']
+    data = wayService.create_one(points)
     return jsonify(data)
 
 if __name__ == '__main__':
     HOST = os.getenv("HOST") or "localhost"
     PORT = os.getenv("PORT") or 5050
-    app.run(HOST, PORT, debug=True)
+    MODE = os.getenv("MODE") or "production"
+
+    app.run(HOST, PORT, debug=(MODE == "development") )

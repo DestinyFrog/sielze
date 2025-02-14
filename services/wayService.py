@@ -26,13 +26,23 @@ class wayService:
         query = Way.get(Way.uid == uid)
         return wayService.get_full(query)
 
-    def create_one():
+    def create_one(points = None):
         id = Way.create( uid = uuid4() )
         way = Way.get(Way.id == id)
+
+        if points != None:
+            points_map = map(lambda point: (point['latitude'], point['longitude'], point['created_on'], way.id), points)
+            points_map = list(points_map)
+            Point.insert_many( points_map, fields=[ Point.latitude, Point.longitude, Point.created_on, Point.way ] ).execute()
+
         return wayService.get_full(way)
 
     def add_point(uid, latitude, longitude, created_on):
         way = Way.get( Way.uid == uid )
-        id = Point.create( latitude=latitude, longitude=longitude, created_on=created_on, way=way )
+        id = Point.create( latitude=latitude, longitude=longitude, created_on=created_on )
         way = Way.get_full(Way.id == id)
         return wayService.get_full(way)
+
+    def add_many_points(way, points):
+        data = map(lambda point: (point.latitude, point.longitude, point.created_on), points)
+        Point.insert_many( data, fields=[ Point.latitude, Point.longitude, Point.created_on ] )

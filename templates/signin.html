@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Cadastre-se{% endblock %}</h1>
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<form class="floating-form">
+    <fieldset>
+        <legend>Nome:</legend>
+        <input type="text" id="input-name" name="name"/>
+    </fieldset>
+
+    <fieldset>
+        <legend>Email:</legend>
+        <input type="email" id="input-email" name="email"/>
+    </fieldset>
+
+    <fieldset>
+        <legend>Crie uma Senha:</legend>
+        <input type="password" id="input-password" name="password"/>
+    </fieldset>
+
+    <fieldset>
+        <legend>Digite sua Senha novamente:</legend>
+        <input type="password" id="input-password2" name="password"/>
+    </fieldset>
+
+    <fieldset>
+        <button class="submit-button">Cadastre-se</button>
+    </fieldset>
+</form>
+
+<script src="{{ url_for('static', filename='way.js') }}"></script>
+{% endblock %}

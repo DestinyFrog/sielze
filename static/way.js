@@ -1,6 +1,5 @@
-
 function handle_error(err) {
-	console.error(err)
+    console.error(err);
 }
 
 const guarulhos_pos = [-23.454163, -46.534096];
@@ -42,7 +41,7 @@ class Way {
     }
 
     start() {
-        this.process = requestAnimationFrame(() => this._loop());
+        this.process = requestIdleCallback(() => this._loop());
     }
 
     _loop() {
@@ -57,15 +56,14 @@ class Way {
         );
 
         setTimeout(() => {
-            this.process = requestAnimationFrame(() => this._loop());
+            this.process = requestIdleCallback(() => this._loop());
         }, this.time);
     }
 
     stop() {
         if (this.process) {
-            cancelAnimationFrame(this.process);
-            this.save()
-			.catch(handle_error)
+            cancelIdleCallback(this.process);
+            this.save().catch(handle_error);
         } else {
             throw new Error("No Process to Cancel");
         }
@@ -103,7 +101,7 @@ class Way {
             },
         });
 
-		await res.json()
+        await res.json();
     }
 
     static async loadAll() {

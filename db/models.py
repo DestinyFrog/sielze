@@ -6,10 +6,26 @@ from db.conn import db
 class BaseModel(Model):
     class Meta:
         database = db
+        
+class User(BaseModel):
+    id = IntegerField(primary_key=True)
+    uid = UUIDField(unique=True)
+    name = CharField()
+    email = CharField(unique=True)
+    password = CharField()
+
+class Routine(BaseModel):
+    id = IntegerField(primary_key=True)
+    title = CharField()
+    description = TextField()
+    
+    user = ForeignKeyField(User, related_name="routines", null=True)
 
 class Way(BaseModel):
     id = IntegerField(primary_key=True)
     uid = UUIDField(unique=True)
+    
+    routine = ForeignKeyField(Routine, related_name="ways", null=True)
 
     created_on = DateTimeField(default=datetime.datetime.now)
 

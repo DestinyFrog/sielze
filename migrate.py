@@ -1,8 +1,8 @@
-from db.models import Point, Way
+from db.models import Point, Way, User, Routine
 
 from db.conn import db
 
-all_tables = [ Way, Point ]
+all_tables = [ User, Routine, Way, Point ]
 
 def drop_tables():
     print("Droping all Tables")
@@ -14,3 +14,7 @@ def create_tables():
 
 drop_tables()
 create_tables()
+
+print("Populating Tables")
+
+User.create( uid="b55d5bff-8962-4958-a5e9-522480ec6d26", name="calisto", email="calisto@email.com", password="Framboesa" )

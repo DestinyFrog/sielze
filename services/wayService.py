@@ -36,13 +36,3 @@ class wayService:
             Point.insert_many( points_map, fields=[ Point.latitude, Point.longitude, Point.created_on, Point.way ] ).execute()
 
         return wayService.get_full(way)
-
-    def add_point(uid, latitude, longitude, created_on):
-        way = Way.get( Way.uid == uid )
-        id = Point.create( latitude=latitude, longitude=longitude, created_on=created_on )
-        way = Way.get_full(Way.id == id)
-        return wayService.get_full(way)
-
-    def add_many_points(way, points):
-        data = map(lambda point: (point.latitude, point.longitude, point.created_on), points)
-        Point.insert_many( data, fields=[ Point.latitude, Point.longitude, Point.created_on ] )

@@ -1,19 +1,52 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, make_response, request, redirect
 from dotenv import load_dotenv
 import os
+import jwt
 
 from services.wayService import wayService
+from services.userService import userService
+from db.models import User
+from middlewares.auth import login_required
 
 load_dotenv()
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
-def hello_world():
+def init():
+    return render_template('login.html')
+
+@app.route("/map", methods=["GET"])
+@login_required
+def map(current_user):
     return render_template('map.html')
 
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+    
+    try:
+        query = User.get(User.email == email)
+    except User.DoesNotExist :
+        return jsonify({'message': "user not found"}), 404
+    
+    user = userService.get_full(query)
+        
+    if user['password'] != password:
+        return jsonify({'message': "password is incorrect"}), 403
+
+    secret = os.getenv("SECRET")
+    uid = str(user['uid'])
+    token = jwt.encode({"uid": uid}, secret, algorithm="HS256")
+
+    resp = make_response(redirect('/map'))
+    resp.set_cookie('token', token)
+    return resp
+
 @app.route("/way")
-def get_all():
+@login_required
+def get_all(current_user):
     data = wayService.get_all()
     return jsonify(data)
 

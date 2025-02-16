@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import jwt
 
+from util import HttpException
 from services.wayService import wayService
 from services.userService import userService
 from db.models import User
@@ -16,33 +17,49 @@ app = Flask(__name__)
 def init():
     return render_template('login.html')
 
+@app.route("/signin", methods=["GET"])
+def signin():
+    return render_template('signin.html')
+
 @app.route("/map", methods=["GET"])
 @login_required
 def map(current_user):
     return render_template('map.html')
 
+#! _____________ AUTH _____________ !#
+
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form.get("email")
     password = request.form.get("password")
-    
+
     try:
-        query = User.get(User.email == email)
-    except User.DoesNotExist :
-        return jsonify({'message': "user not found"}), 404
-    
-    user = userService.get_full(query)
-        
-    if user['password'] != password:
-        return jsonify({'message': "password is incorrect"}), 403
+        user = userService.login(email, password)
+    except HttpException as e:
+        return render_template('login.html', error_log=str(e) ), e.http_error_code
 
-    secret = os.getenv("SECRET")
-    uid = str(user['uid'])
-    token = jwt.encode({"uid": uid}, secret, algorithm="HS256")
+    token = userService.generate_token(user)
 
-    resp = make_response(redirect('/map'))
+    resp = make_response(jsonify({ "message": "successfully logged" }))
     resp.set_cookie('token', token)
     return resp
+
+@app.route("/signin", methods=["POST"])
+def new_user():
+    name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    userService.create_user(name, email, password)
+    return redirect('/')
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    resp = make_response(redirect('/'))
+    resp.delete_cookie('token')
+    return resp
+
+#! _____________ WAY ______________ !#
 
 @app.route("/way")
 @login_required
@@ -61,6 +78,29 @@ def create_one_way():
     points = body['points']
     data = wayService.create_one(points)
     return jsonify(data)
+
+#! ___________ ANDROID ____________ !#
+
+@app.route("/android/login", methods=["POST"])
+def login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    try:
+        user = userService.login(email, password)
+    except HttpException as e:
+        message = {
+            "error": str(e)
+        }
+        return jsonify(message), e.http_error_code
+
+    token = userService.generate_token(user)
+    body = {
+        "message": "successfully logged",
+        "token": token
+    }
+
+    return jsonify(body), 200
 
 if __name__ == '__main__':
     HOST = os.getenv("HOST") or "localhost"

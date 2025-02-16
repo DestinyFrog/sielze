@@ -16,9 +16,10 @@ class User(BaseModel):
 
 class Routine(BaseModel):
     id = IntegerField(primary_key=True)
+    uid = UUIDField(unique=True)
     title = CharField()
     description = TextField()
-    
+    public = BooleanField(default=False)
     user = ForeignKeyField(User, related_name="routines", null=True)
 
 class Way(BaseModel):

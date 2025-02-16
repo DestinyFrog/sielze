@@ -6,12 +6,13 @@
 
 header {
     position: fixed;
-    bottom: 20px;
-    left: 10px;
-    width: calc(100vw - 20px);
+    bottom: 10px;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    width: auto;
     height: 50px;
     z-index: 999;
     border: 2px solid black;
-    border-radius: 5px;
+    border-radius: 20px;
     background-color: white;
 }

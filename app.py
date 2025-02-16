@@ -82,7 +82,7 @@ def create_one_way():
 #! ___________ ANDROID ____________ !#
 
 @app.route("/android/login", methods=["POST"])
-def login():
+def android_login():
     body = request.get_json()
     email = body.get("email")
     password = body.get("password")

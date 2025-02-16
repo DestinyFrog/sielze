@@ -83,8 +83,9 @@ def create_one_way():
 
 @app.route("/android/login", methods=["POST"])
 def login():
-    email = request.form.get("email")
-    password = request.form.get("password")
+    body = request.get_json()
+    email = body.get("email")
+    password = body.get("password")
 
     try:
         user = userService.login(email, password)
